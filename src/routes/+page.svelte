@@ -2,18 +2,19 @@
 <script lang="ts">
     import { enhance } from "$app/forms";
     import type { ActionData, PageData } from "./$types";
+    import Avatar from "./Avatar.svelte";
 
     export let data: PageData;
     export let form: ActionData;
 
     let { session, profile } = data;
 
-    let profileForm: any;
+    let profileForm: HTMLFormElement;
     let loading = false;
     let fullName: string | null = profile?.full_name;
     let username: string | null = profile?.username;
     let website: string | null = profile?.website;
-    let avatarUrl: string | null = profile?.avatar_url;
+    let avatarUrl: string = profile?.avatar_url ?? "";
 
     function handleSubmit() {
         loading = true;
@@ -24,6 +25,14 @@
 </script>
 
 <div class="form-widget">
+    <Avatar
+        supabase={data.supabase}
+        bind:url={avatarUrl}
+        size={10}
+        on:upload={() => {
+            profileForm.requestSubmit();
+        }}
+    />
     <form
         class="form-widget"
         method="post"
@@ -33,7 +42,12 @@
     >
         <div>
             <label for="email">Email</label>
-            <input id="email" type="text" value={session?.user.email} disabled />
+            <input
+                id="email"
+                type="text"
+                value={session?.user.email}
+                disabled
+            />
         </div>
 
         <div>
@@ -76,7 +90,7 @@
         </div>
     </form>
 
-    <form method="post" action="?/signout" >
+    <form method="post" action="?/signout">
         <button class="button block" disabled={loading}>Sign Out</button>
     </form>
 </div>

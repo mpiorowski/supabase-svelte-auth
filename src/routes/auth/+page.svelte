@@ -1,10 +1,9 @@
 <!-- src/routes/+page.svelte -->
 <script lang="ts">
-    import { Auth } from "@supabase/auth-ui-svelte";
-    import { ThemeSupa } from "@supabase/auth-ui-shared";
     import type { PageData } from "./$types";
 
     export let data: PageData;
+    export let email: string;
 </script>
 
 <svelte:head>
@@ -13,22 +12,32 @@
 
 <div class="row flex-center flex">
     <div class="col-6 form-widget">
-        <Auth
-            supabaseClient={data.supabase}
-            providers={['google', 'facebook', 'twitter']}
-            magicLink={true}
-            onlyThirdPartyProviders={true}
-            redirectTo={`${data.url}/logging-in?redirect=/`}
-            appearance={{ theme: ThemeSupa }}
-            theme="dark"
-        />
-        <Auth
-            supabaseClient={data.supabase}
-            showLinks={false}
-            view="magic_link"
-            redirectTo={`${data.url}/logging-in?redirect=/`}
-            appearance={{ theme: ThemeSupa }}
-            theme="dark"
-        />
+        <button
+            class="btn btn-primary btn-block"
+            on:click={() => {
+                data.supabase.auth.signInWithOAuth({
+                    provider: "google",
+                    options: {
+                        redirectTo: `${data.url}/logging-in?redirect=/`,
+                    },
+                });
+            }}
+        >
+            Sign in with google
+        </button>
+        <input type="text" name="email" placeholder="Email" bind:value={email} />
+        <button
+            class="btn btn-primary btn-block"
+            on:click={async () => {
+                await data.supabase.auth.signInWithOtp({
+                    email,
+                    options: {
+                        emailRedirectTo: `${data.url}/logging-in?redirect=/`,
+                    },
+                });
+            }}
+        >
+            Sign in using email
+        </button>
     </div>
 </div>
