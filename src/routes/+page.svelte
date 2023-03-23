@@ -9,7 +9,6 @@
 
     let { session, profile } = data;
 
-    let profileForm: HTMLFormElement;
     let loading = false;
     let fullName: string | null = profile?.full_name;
     let username: string | null = profile?.username;
@@ -27,18 +26,14 @@
 <div class="form-widget">
     <Avatar
         supabase={data.supabase}
-        bind:url={avatarUrl}
+        avatarPath={avatarUrl}
         size={10}
-        on:upload={() => {
-            profileForm.requestSubmit();
-        }}
     />
     <form
         class="form-widget"
         method="post"
         action="?/update"
         use:enhance={handleSubmit}
-        bind:this={profileForm}
     >
         <div>
             <label for="email">Email</label>

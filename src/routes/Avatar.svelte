@@ -1,29 +1,24 @@
 <script lang="ts">
     import type { SupabaseClient } from "@supabase/supabase-js";
-    import { createEventDispatcher } from "svelte";
 
     export let size = 10;
-    export let url: string;
     export let supabase: SupabaseClient;
+    export let avatarPath: string;
 
-    let avatarUrl: string;
+    let avatarUrl = "";
+
     let uploading = false;
-    let files: FileList;
-
-    const dispatch = createEventDispatcher();
+    let form: HTMLFormElement;
 
     const downloadImage = async (path: string) => {
         try {
             const { data, error } = await supabase.storage
                 .from("avatars")
                 .download(path);
-
             if (error) {
                 throw error;
             }
-
-            const url = URL.createObjectURL(data);
-            avatarUrl = url;
+            avatarUrl = URL.createObjectURL(data);
         } catch (error) {
             if (error instanceof Error) {
                 console.log("Error downloading image: ", error.message);
@@ -32,36 +27,10 @@
     };
 
     const uploadAvatar = async () => {
-        try {
-            uploading = true;
-
-            if (!files || files.length === 0) {
-                throw new Error("You must select an image to upload.");
-            }
-
-            const file = files[0];
-            const fileExt = file.name.split(".").pop();
-            url = `${Math.random()}.${fileExt}`;
-
-            let { error } = await supabase.storage
-                .from("avatars")
-                .upload(url, file);
-
-            if (error) {
-                throw error;
-            }
-
-            dispatch("upload");
-        } catch (error) {
-            if (error instanceof Error) {
-                alert(error.message);
-            }
-        } finally {
-            uploading = false;
-        }
+        form.submit();
     };
 
-    $: if (url) downloadImage(url);
+    $: if (avatarPath) downloadImage(avatarPath);
 </script>
 
 <div>
@@ -78,20 +47,26 @@
             style="height: {size}em; width: {size}em;"
         />
     {/if}
-    <input type="hidden" name="avatarUrl" value={url} />
 
     <div style="width: {size}em;">
-        <label class="button primary block" for="single">
-            {uploading ? "Uploading ..." : "Upload"}
-        </label>
-        <input
-            style="visibility: hidden; position:absolute;"
-            type="file"
-            id="single"
-            accept="image/*"
-            bind:files
-            on:change={uploadAvatar}
-            disabled={uploading}
-        />
+        <form
+            action="?/updateAvatar"
+            method="post"
+            bind:this={form}
+            enctype="multipart/form-data"
+        >
+            <label class="button primary block" for="avatar">
+                {uploading ? "Uploading ..." : "Upload"}
+            </label>
+            <input
+                style="visibility: hidden; position:absolute;"
+                id="avatar"
+                name="avatar"
+                type="file"
+                accept="image/*"
+                on:change={uploadAvatar}
+                disabled={uploading}
+            />
+        </form>
     </div>
 </div>

@@ -1,4 +1,4 @@
-import { fail, redirect } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load = (async ({ locals: { supabase, getSession } }) => {
@@ -23,7 +23,6 @@ export const actions = {
         const fullName = formData.get("fullName") as string;
         const username = formData.get("username") as string;
         const website = formData.get("website") as string;
-        const avatarUrl = formData.get("avatarUrl") as string;
 
         const session = await getSession();
 
@@ -32,7 +31,6 @@ export const actions = {
             full_name: fullName,
             username,
             website,
-            avatar_url: avatarUrl,
             updated_at: new Date(),
         });
 
@@ -41,7 +39,6 @@ export const actions = {
                 fullName,
                 username,
                 website,
-                avatarUrl,
             });
         }
 
@@ -49,7 +46,41 @@ export const actions = {
             fullName,
             username,
             website,
-            avatarUrl,
+        };
+    },
+    updateAvatar: async ({ request, locals: { supabase, getSession } }) => {
+        const formData = await request.formData();
+        const avatar = formData.get("avatar");
+        const session = await getSession();
+        const userId = session?.user.id;
+
+        if (!(avatar instanceof File) || avatar.size === 0) {
+            throw error(400, "Invalid request");
+        }
+
+        if (!userId) {
+            throw new Error("You must be logged in to upload an image.");
+        }
+        const fileExt = avatar.name.split(".").pop();
+        const url = `${Math.random()}.${fileExt}`;
+
+        const response = await supabase.storage
+            .from("avatars")
+            .upload(url, avatar);
+
+        await supabase
+            .from("profiles")
+            .update({ avatar_url: response.data?.path })
+            .eq("id", userId);
+
+        if (response.error) {
+            return fail(500, {
+                avatarName: avatar.name,
+            });
+        }
+
+        return {
+            success: true,
         };
     },
     signout: async ({ locals: { supabase } }) => {
