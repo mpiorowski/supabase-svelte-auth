@@ -24,6 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     };
 
     const session = await event.locals.getSession();
+    console.log("session", session);
     if (!event.url.pathname.startsWith("/logging-in")) {
         if (event.url.pathname.startsWith("/auth") && session) {
             throw redirect(303, "/");
