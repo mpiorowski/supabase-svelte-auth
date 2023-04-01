@@ -26,7 +26,7 @@ export const actions = {
 
         const session = await getSession();
 
-        const { error } = await supabase.from("profiles").upsert({
+        const profile = await supabase.from("profiles").upsert({
             id: session?.user.id,
             full_name: fullName,
             username,
@@ -34,7 +34,7 @@ export const actions = {
             updated_at: new Date(),
         });
 
-        if (error) {
+        if (profile.error) {
             return fail(500, {
                 fullName,
                 username,
@@ -62,7 +62,7 @@ export const actions = {
             throw new Error("You must be logged in to upload an image.");
         }
         const fileExt = avatar.name.split(".").pop();
-        const url = `${Math.random()}.${fileExt}`;
+        const url = `${Math.random()}.${fileExt ?? "jpg"}`;
 
         const response = await supabase.storage
             .from("avatars")

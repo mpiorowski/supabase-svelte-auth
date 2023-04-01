@@ -25,7 +25,12 @@
         >
             Sign in with google
         </button>
-        <input type="text" name="email" placeholder="Email" bind:value={email} />
+        <input
+            type="text"
+            name="email"
+            placeholder="Email"
+            bind:value={email}
+        />
         <button
             class="btn btn-primary btn-block"
             on:click={async () => {
