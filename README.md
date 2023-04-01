@@ -1,38 +1,20 @@
-# create-svelte
+# Supabase authentication with SvelteKit SSR
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Demo
+https://supabase-svelte-ssr.vercel.app
 
-## Creating a project
+## Description
 
-If you're seeing this, you've probably already done this step. Congrats!
+This template was build using [Supabase Guide](https://supabase.com/docs/guides/getting-started/tutorials/with-sveltekit) with some minor tweaks:
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+- Moved image logic into server side.
 
-# create a new project in my-app
-npm create svelte@latest my-app
+## Missing environment variables
+
+For local development You can create an .env file in root folder.
+
 ```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+SERVICE_ACCOUNT='service account key object parsed as string'
+PUBLIC_API_KEY='firebase client api key'
+PUBLIC_AUTH_DOMAIN='firebase client auth domain'
 ```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
