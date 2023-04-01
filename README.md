@@ -9,6 +9,7 @@ This template was build using [Supabase Guide](https://supabase.com/docs/guides/
 
 - Full page protection inside `hooks.server.ts`, which means EVERY request is checked.
 - Moved image logic into server side.
+- Cleared all strict typescript warnings.
 
 ## Missing environment variables
 
